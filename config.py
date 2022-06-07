@@ -30,5 +30,6 @@ def load_modules():
             import_module("modules." + module[:-3])
             info("Loaded module: " + module)
 
+
 def setup_aria2():
     pass

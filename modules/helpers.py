@@ -2,6 +2,19 @@ from subprocess import Popen, PIPE
 from config import bot, OWNER_ID
 import telethon
 from modules.db import is_auth
+import datetime
+
+
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+
+def format_time(time):
+    return str(datetime.timedelta(seconds=time))
 
 
 def run_shell(command: str, wait: bool):
@@ -42,6 +55,7 @@ def auth_only(func):
             else:
                 await ev.reply("You are not authorized to use this command.")
     return wrapper
+
 
 def master_only(func):
     async def wrapper(ev):
