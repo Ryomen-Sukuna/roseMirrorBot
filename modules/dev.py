@@ -2,6 +2,8 @@ import psutil
 import platform
 import datetime
 
+from modules.helpers import hnd, auth_only, master_only
+
 
 def get_size(bytes, suffix="B"):
     factor = 1024
@@ -54,4 +56,24 @@ def get_system_statistics():
         time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     return STATS
+
+@hnd(pattern="sys")
+@auth_only
+async def sys_cmd(ev):
+    await ev.reply(get_system_statistics())
+
+@hnd(pattern="auth")
+@master_only
+async def auth_cmd(ev):
+    await ev.reply("Authorization is not implemented yet.")
+
+@hnd(pattern="addauth")
+@master_only
+async def addauth_cmd(ev):
+    await ev.reply("Authorization is not implemented yet.")
+
+@hnd(pattern="delauth")
+@master_only
+async def delauth_cmd(ev):
+    await ev.reply("Authorization is not implemented yet.")
 
