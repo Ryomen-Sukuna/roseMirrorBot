@@ -1,0 +1,57 @@
+import psutil
+import platform
+import datetime
+
+
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+
+def format_time(time):
+    return str(datetime.timedelta(seconds=time))
+
+
+def get_system_statistics():
+    STATS = '''
+    **System statistics:**
+    **OS:** {os}
+    **CPU Cores:** {cpu}
+    **CPU usage:** {cpu_usage}%
+    **RAM:** {ram}
+    **RAM usage:** {ram_usage}%
+
+    **Disk:** {disk}
+    **Disk usage:** {disk_usage}
+    **Disk Free:** {disk_free}
+
+    **Network sent:** {network_sent}
+    **Network received:** {network_received}
+
+    **Uptime:** {uptime}
+    **Boot time:** {boot_time}
+    **Time:** {time}
+    '''.format(
+        os=platform.system(),
+        cpu=psutil.cpu_count(),
+        cpu_usage=psutil.cpu_percent(),
+        ram=get_size(psutil.virtual_memory().total),
+        ram_usage=psutil.virtual_memory().percent,
+        disk=get_size(psutil.disk_usage("/").total),
+        disk_usage=get_size(psutil.disk_usage("/").used),
+        disk_free=get_size(psutil.disk_usage("/").free),
+        network=get_size(psutil.net_io_counters().bytes_sent),
+        network_usage=get_size(psutil.net_io_counters().bytes_sent),
+        network_sent=get_size(psutil.net_io_counters().bytes_sent),
+        network_received=get_size(psutil.net_io_counters().bytes_recv),
+        uptime=format_time(
+            datetime.datetime.now().timestamp() - psutil.boot_time()),
+        boot_time=datetime.datetime.fromtimestamp(
+            psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S"),
+        time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    return STATS
+
