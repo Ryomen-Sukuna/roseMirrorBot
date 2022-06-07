@@ -6,7 +6,7 @@ from modules.helpers import hnd, auth_only, master_only, get_size, format_time
 
 
 def get_system_statistics():
-    STATS = '''
+    return '''
     **System statistics:**
     **OS:** {os}
     **CPU Cores:** {cpu}
@@ -38,12 +38,13 @@ def get_system_statistics():
         network_sent=get_size(psutil.net_io_counters().bytes_sent),
         network_received=get_size(psutil.net_io_counters().bytes_recv),
         uptime=format_time(
-            datetime.datetime.now().timestamp() - psutil.boot_time()),
-        boot_time=datetime.datetime.fromtimestamp(
-            psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S"),
-        time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            datetime.datetime.now().timestamp() - psutil.boot_time()
+        ),
+        boot_time=datetime.datetime.fromtimestamp(psutil.boot_time()).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        ),
+        time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     )
-    return STATS
 
 
 @hnd(pattern="sys")
