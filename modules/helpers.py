@@ -20,11 +20,10 @@ def format_time(time):
 def run_shell(command: str, wait: bool):
     subproc = Popen(command, stdout=PIPE, stderr=PIPE,
                     shell=True, universal_newlines=True)
-    if wait:
-        stdout, stderr = subproc.communicate()
-        return stdout, stderr
-    else:
+    if not wait:
         return subproc
+    stdout, stderr = subproc.communicate()
+    return stdout, stderr
 
 
 def hnd(**args):
@@ -44,29 +43,22 @@ def hnd(**args):
 
 def auth_only(func):
     async def wrapper(ev):
-        if ev.is_private:
-            if is_auth(ev.sender_id):
-                await func(ev)
-            else:
-                await ev.reply("You are not authorized to use this command.")
+        if (
+            ev.is_private
+            and is_auth(ev.sender_id)
+            or not ev.is_private
+            and is_auth(ev.chat_id)
+        ):
+            await func(ev)
         else:
-            if is_auth(ev.chat_id):
-                await func(ev)
-            else:
-                await ev.reply("You are not authorized to use this command.")
+            await ev.reply("You are not authorized to use this command.")
     return wrapper
 
 
 def master_only(func):
     async def wrapper(ev):
-        if ev.is_private:
-            if ev.sender_id == OWNER_ID:
-                await func(ev)
-            else:
-                await ev.reply("You are not authorized to use this command.")
+        if ev.sender_id == OWNER_ID:
+            await func(ev)
         else:
-            if ev.sender_id == OWNER_ID:
-                await func(ev)
-            else:
-                await ev.reply("You are not authorized to use this command.")
+            await ev.reply("You are not authorized to use this command.")
     return wrapper

@@ -27,8 +27,8 @@ bot = TelegramClient("bot", API_KEY, API_HASH,
 def load_modules():
     for module in listdir("modules"):
         if module.endswith(".py"):
-            import_module("modules." + module[:-3])
-            info("Loaded module: " + module)
+            import_module(f"modules.{module[:-3]}")
+            info(f"Loaded module: {module}")
 
 
 def setup_aria2():
