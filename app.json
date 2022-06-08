@@ -1,1 +1,39 @@
-{}
+{
+    "name": "roseMirrorbot",
+    "description": "A bot that mirrors torrent and other files, with additional features.",
+    "env": {
+        "API_KEY": {
+            "description": "The API key for the bot.",
+            "required": true
+        },
+        "API_HASH": {
+            "description": "The API hash for the bot.",
+            "required": true
+        },
+        "OWNER_ID": {
+            "description": "The ID of the bot owner.",
+            "required": true
+        },
+        "TOKEN": {
+            "description": "The bot token.",
+            "required": true
+        },
+        "MONGO_URL": {
+            "description": "The MongoDB URL.",
+            "required": true
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "heroku/python"
+        },
+        {
+            "url": "https://github.com/repoku/aria2-build.git"
+        },
+        {
+            "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+        }
+    ],
+    "repository": "https://github.com/amarnathcjd/rosemirrorbot.git",
+    "logo": "https://image.shutterstock.com/image-vector/rose-logo-600w-618974849.jpg"
+}
