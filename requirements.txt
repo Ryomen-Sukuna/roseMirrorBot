@@ -1,0 +1,6 @@
+telethon
+aria2p
+pymongo
+dnspython
+psutil
+requests
