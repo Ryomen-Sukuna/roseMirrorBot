@@ -29,6 +29,9 @@
         },
         {
             "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+        },
+        {
+            "url": "heroku/python"
         }
     ],
     "repository": "https://github.com/amarnathcjd/rosemirrorbot.git",
