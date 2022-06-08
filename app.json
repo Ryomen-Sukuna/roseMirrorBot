@@ -25,9 +25,6 @@
     },
     "buildpacks": [
         {
-            "url": "heroku/python"
-        },
-        {
             "url": "https://github.com/repoku/aria2-build.git"
         },
         {
