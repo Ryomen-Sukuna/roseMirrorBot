@@ -23,15 +23,16 @@
             "required": true
         }
     },
+    "image": "heroku/python",
     "buildpacks": [
+        {
+            "url": "heroku/python"
+        },
         {
             "url": "https://github.com/repoku/aria2-build.git"
         },
         {
             "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
-        },
-        {
-            "url": "heroku/python"
         }
     ],
     "repository": "https://github.com/amarnathcjd/rosemirrorbot.git",
