@@ -4,6 +4,9 @@ import telethon
 from modules.db import is_auth
 import datetime
 
+EDIT_SLEEP = 3
+TEMP_DOWNLOAD_PATH = "./temp/"
+
 
 def get_size(bytes, suffix="B"):
     factor = 1024

@@ -1,6 +1,9 @@
 from config import db, OWNER_ID
 
 auth = db["bot"].auth
+dl = db["bot"].dl
+
+# Auth list
 
 AUTH = []
 
@@ -31,3 +34,17 @@ def get_auth_list():
 def load_auth():
     for chat_id in get_auth_list():
         AUTH.append(chat_id["_id"])
+
+# Downloader
+
+
+def add_download_to_db(chat_id, gid):
+    dl.update_one({"_id": chat_id}, {"$push": {"gids": gid}}, upsert=True)
+
+
+def get_download_list(chat_id):
+    return dl.find_one({"_id": chat_id})["gids"]
+
+
+def remove_download_from_db(chat_id, gid):
+    dl.update_one({"_id": chat_id}, {"$pull": {"gids": gid}})
