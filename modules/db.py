@@ -8,8 +8,8 @@ dl = db["bot"].dl
 AUTH = []
 
 
-def is_auth(chat_id):
-    return chat_id in AUTH or chat_id == OWNER_ID
+def is_auth(chat_id: int):
+    return chat_id in AUTH
 
 
 def add_auth(chat_id):
@@ -34,6 +34,9 @@ def get_auth_list():
 def load_auth():
     for chat_id in get_auth_list():
         AUTH.append(chat_id["_id"])
+    AUTH.append(OWNER_ID)    
+
+load_auth()        
 
 # Downloader
 

@@ -48,12 +48,12 @@ def hnd(**args):
 def auth_only(func):
     async def wrapper(ev):
         if ev.is_private:
-            if is_auth(ev.sender_id):
+            if is_auth(ev.sender_id) or ev.sender_id == OWNER_ID:
                 await func(ev)
             else:
                 await ev.reply("You are not authorized to use this command.")
         else:
-            if is_auth(ev.chat_id):
+            if is_auth(ev.chat_id) or ev.sender_id == OWNER_ID:
                 await func(ev)
             else:
                 await ev.reply("You are not authorized to use this command.")

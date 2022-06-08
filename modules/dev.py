@@ -3,7 +3,7 @@ import platform
 import datetime
 
 from modules.helpers import hnd, auth_only, master_only, get_size, format_time
-
+from .db import add_auth
 
 def get_system_statistics():
     STATS = '''
@@ -55,7 +55,10 @@ async def sys_cmd(ev):
 @hnd(pattern="auth")
 @master_only
 async def auth_cmd(ev):
-    await ev.reply("Authorization is not implemented yet.")
+    await ev.reply("Authed this chat.")
+    add_auth(ev.chat_id)
+
+
 
 
 @hnd(pattern="addauth")
