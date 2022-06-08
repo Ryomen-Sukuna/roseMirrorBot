@@ -36,7 +36,7 @@ async def mkv_to_mp4(file_path, event):
 
 async def edit_ffmpeg_progress(event, progress, file_name):
     if event.text != f"Converting {file_name} | {progress}":
-        await event.edit(f"Converting {file_name} | {progress}")
+        m = await event.edit(f"Converting {file_name} | {progress}")
     await asyncio.sleep(EDIT_SLEEP)
     return m
 
