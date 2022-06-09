@@ -63,35 +63,35 @@ async def progress_callback(gid: str, msg):
                 [Button.inline("Upload", data=f"upload_{status.gid}")],
                 [Button.inline("Direct URL", data=f"url_{status.gid}")],
             ]
-            await msg.edit(
+            msg = await msg.edit(
                 f"Download complete.\nSaved to: `{status.files[0].path}`")
             remove_download_from_db(msg.chat_id, gid)
         elif status.status == "error":
             finished = True
-            await msg.edit("Download failed." +
-                           f"\nError: {status.error_message}")
+            msg = await msg.edit("Download failed." +
+                                 f"\nError: {status.error_message}")
             remove_download_from_db(msg.chat_id, gid)
         elif status.status == "paused":
             finished = True
-            await msg.edit("Download paused.")
+            msg = await msg.edit("Download paused.")
         elif status.status == "active":
-            await msg.edit(gen_progress_msg(msg.chat_id, status))
+            msg = await msg.edit(gen_progress_msg(msg.chat_id, status))
             await asyncio.sleep(3)
         elif status.status == "waiting":
-            await msg.edit(gen_progress_msg(msg.chat_id, status))
+            msg = await msg.edit(gen_progress_msg(msg.chat_id, status))
             await asyncio.sleep(3)
         elif status.status == "stopped":
             buttons = [
                 [Button.inline("Resume", data=f"start_{msg.chat_id}_{gid}")],
                 [Button.inline("Delete", data=f"delete_{msg.chat_id}_{gid}")],
             ]
-            await msg.edit(
+            msg = await msg.edit(
                 f"Download stopped.",
                 buttons=buttons,
             )
             finished = True
         else:
-            await msg.edit(f"Unknown status: {status.status}")
+            msg = await msg.edit(f"Unknown status: {status.status}")
             finished = True
 
 
