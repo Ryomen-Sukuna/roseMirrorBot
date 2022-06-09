@@ -55,8 +55,10 @@ def gen_progress_msg(chat_id: int, status):
 
 async def progress_callback(gid: str, msg):
     finished = False
+    print(f"Progress callback for {gid}")
     while not finished:
         status = ARIA.get_download(gid)
+        print(f"Status: {status.status}")
         if status.status == "complete":
             finished = True
             buttons = [
@@ -105,4 +107,5 @@ async def download_cmd(ev):
     path = get_path_from_chat_id(ev.chat_id)
     download = add_download(ev.chat_id, url, path)
     msg = await ev.reply("`Downloading...`")
+    print(f"Downloading {url} to {path}")
     await progress_callback(download.gid, msg)
