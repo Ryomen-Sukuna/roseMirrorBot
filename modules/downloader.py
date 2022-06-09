@@ -43,7 +43,7 @@ def get_download_gids():
 def gen_progress_msg(chat_id: int, status):
     msg = f"Downloading: {status.name}"
     msg += f"\nSpeed: {get_size(status.download_speed)}/s"
-    msg += "\nETA: " + str(get_time_diff(status.eta))
+    msg += "\nETA: " + status.eta_string(precision=0)
     msg += f"\nTotal: {get_size(status.total_length)}"
     msg += f"\nProgress: {status.progress_string(digits=2)}%"
     buttons = [
