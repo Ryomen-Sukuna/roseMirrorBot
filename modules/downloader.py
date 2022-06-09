@@ -79,11 +79,13 @@ async def progress_callback(gid: str, msg):
         elif status.status == "active":
             print(f"Progress: {status.progress}")
             text, buttons = gen_progress_msg(msg.chat_id, status)
-            msg = await msg.edit(text, buttons=buttons)
+            if msg.text != text:
+                msg = await msg.edit(text, buttons=buttons)
             await asyncio.sleep(3)
         elif status.status == "waiting":
             text, buttons = gen_progress_msg(msg.chat_id, status)
-            msg = await msg.edit(text, buttons=buttons)
+            if msg.text != text:
+                msg = await msg.edit(text, buttons=buttons)
             await asyncio.sleep(3)
         elif status.status == "stopped":
             buttons = [
