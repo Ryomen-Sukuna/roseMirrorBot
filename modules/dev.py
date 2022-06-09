@@ -23,7 +23,7 @@ def get_system_statistics():
     STATS += "• **Disk:** " + \
         str(get_size(psutil.disk_usage("/").total)) + "\n"
     STATS += "• **Disk Usage:** " + str(psutil.disk_usage("/").percent) + "%\n"
-    STATS += "• **Disk IO:** " + str(psutil.disk_io_counters().read_count) + " reads, " + str(
+    STATS += "• **Disk IO:** " + str(psutil.disk_io_counters().read_count if psutil.disk_io_counters() else "") + " reads, " + str(
         psutil.disk_io_counters().write_count
     ) + " writes\n"
     STATS += "\n"
