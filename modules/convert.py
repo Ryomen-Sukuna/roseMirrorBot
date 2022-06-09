@@ -1,6 +1,6 @@
 import subprocess
 import os
-from .helpers import TEMP_DOWNLOAD_PATH, hnd, auth_only, EDIT_SLEEP
+from .helpers import TEMP_DOWNLOAD_PATH, auth_chat_only, hnd, EDIT_SLEEP
 import asyncio
 from telethon import types
 
@@ -81,7 +81,7 @@ def get_file_name(doc):
 
 
 @hnd(pattern="convert")
-@auth_only
+@auth_chat_only
 async def _convert(event):
     if event.is_private:
         await event.reply("This command is only available in groups.")

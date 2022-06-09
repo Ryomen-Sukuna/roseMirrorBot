@@ -2,7 +2,8 @@ import psutil
 import platform
 import datetime
 
-from modules.helpers import hnd, auth_only, master_only, get_size, format_time
+from modules.helpers import getUser, hnd, auth_only, master_only, get_size, format_time
+from .downloader import get_len_downloads
 import io
 import sys
 import asyncio
@@ -11,43 +12,30 @@ from .db import add_auth
 
 
 def get_system_statistics():
-    STATS = '''
-    **System statistics:**
-    **OS:** {os}
-    **CPU Cores:** {cpu}
-    **CPU usage:** {cpu_usage}%
-    **RAM:** {ram}
-    **RAM usage:** {ram_usage}%
+    STATS = "**System Statistics**\n"
+    STATS += "• **OS:** `{}`\n".format(platform.platform())
+    STATS += "• **CPU Cores**: " + str(psutil.cpu_count()) + "\n"
+    STATS += "• **CPU Usage:** " + str(psutil.cpu_percent()) + "%\n"
+    STATS += "• **RAM:** " + \
+        str(get_size(psutil.virtual_memory().total)) + "\n"
+    STATS += "• **RAM Usage:** " + str(psutil.virtual_memory().percent) + "%\n"
+    STATS += "\n"
+    STATS += "• **Disk:** " + \
+        str(get_size(psutil.disk_usage("/").total)) + "\n"
+    STATS += "• **Disk Usage:** " + str(psutil.disk_usage("/").percent) + "%\n"
+    STATS += "• **Disk IO:** " + str(psutil.disk_io_counters().read_count) + " reads, " + str(
+        psutil.disk_io_counters().write_count
+    ) + " writes\n"
+    STATS += "\n"
+    STATS += "• **Network:** " + str(psutil.net_io_counters().bytes_sent) + " sent, " + str(
+        psutil.net_io_counters().bytes_recv
+    ) + " received\n"
+    STATS += "\n"
+    STATS += "• **Uptime:** " + \
+        str(format_time(datetime.datetime.now() - psutil.boot_time())) + "\n"
+    STATS += "• **Python:** " + str(sys.version) + "\n"
+    STATS += "• **Downloads Count:** " + get_len_downloads() + "\n"
 
-    **Disk:** {disk}
-    **Disk usage:** {disk_usage}
-    **Disk Free:** {disk_free}
-
-    **Network sent:** {network_sent}
-    **Network received:** {network_received}
-
-    **Uptime:** {uptime}
-    **Boot time:** {boot_time}
-    **Time:** {time}
-    '''.format(
-        os=platform.system(),
-        cpu=psutil.cpu_count(),
-        cpu_usage=psutil.cpu_percent(),
-        ram=get_size(psutil.virtual_memory().total),
-        ram_usage=psutil.virtual_memory().percent,
-        disk=get_size(psutil.disk_usage("/").total),
-        disk_usage=get_size(psutil.disk_usage("/").used),
-        disk_free=get_size(psutil.disk_usage("/").free),
-        network=get_size(psutil.net_io_counters().bytes_sent),
-        network_usage=get_size(psutil.net_io_counters().bytes_sent),
-        network_sent=get_size(psutil.net_io_counters().bytes_sent),
-        network_received=get_size(psutil.net_io_counters().bytes_recv),
-        uptime=format_time(
-            datetime.datetime.now().timestamp() - psutil.boot_time()),
-        boot_time=datetime.datetime.fromtimestamp(
-            psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S"),
-        time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    )
     return STATS
 
 
@@ -60,8 +48,15 @@ async def sys_cmd(ev):
 @hnd(pattern="auth")
 @master_only
 async def auth_cmd(ev):
-    await ev.reply("Authed this chat.")
-    add_auth(ev.chat_id)
+    user, _ = await getUser(ev)
+    if not user and not ev.is_private:
+        add_auth(ev.chat_id)
+        await ev.reply("Chat has been authorized.")
+    elif not user and ev.is_private:
+        await ev.reply("Not Found.")
+    elif user:
+        await ev.reply("User has been authorized.")
+        add_auth(user.id)
 
 
 @hnd(pattern="addauth")

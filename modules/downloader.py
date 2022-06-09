@@ -1,4 +1,7 @@
-from .helpers import run_shell, get_size, format_time
+import asyncio
+
+from telethon import Button
+from .helpers import auth_chat_only, run_shell, get_size, format_time, hnd
 from .db import add_download_to_db, get_download_list, remove_download_from_db
 from requests import get
 
@@ -23,25 +26,83 @@ def add_download(chat_id, url, path):
     add_download_to_db(chat_id, download.gid)
     return download
 
+
 def get_path_from_chat_id(chat_id):
     return f"/downloads/{chat_id}/"
 
-def gen_progress_msg(chat_id: int, gid: str):
-    status = ARIA.get_download([gid])
-    if status.status == "active":
-        msg = f"Downloading: {status.files[0].name}"
-        msg += f"\nSpeed: {get_size(status.download_speed)}/s"
-        msg += f"\nETA: {format_time(status.eta)}"
-        msg += f"\nTotal: {get_size(status.total_length)}"
-        msg += f"\nProgress: {status.progress}%"
-    elif status.status == "paused":
-        msg = "Download paused."
-    elif status.status == "error":
-        msg = "Download failed."
-    elif status.status == "complete":
-        msg = "Download complete."
-        msg += f"\nSaved to: `{status.files[0].path}`"
-        remove_download_from_db(chat_id, gid)
-    else:
-        msg = "Download unknown status."
-    return msg
+
+def get_len_downloads():
+    return len(get_download_list())
+
+
+def get_download_gids():
+    downloads = ARIA.get_downloads()
+    return [d.gid for d in downloads]
+
+
+def gen_progress_msg(chat_id: int, status):
+    msg = f"Downloading: {status.files[0].name}"
+    msg += f"\nSpeed: {get_size(status.download_speed)}/s"
+    msg += f"\nETA: {format_time(status.eta)}"
+    msg += f"\nTotal: {get_size(status.total_length)}"
+    msg += f"\nProgress: {status.progress}%"
+    buttons = [
+        [Button.inline("Cancel", data=f"cancel_{chat_id}_{status.gid}")],
+        [Button.inline("Pause", data=f"pause_{chat_id}_{status.gid}")],
+    ]
+    return msg, buttons
+
+
+async def progress_callback(gid: str, msg):
+    finished = False
+    while not finished:
+        status = ARIA.get_download(gid)
+        if status.status == "complete":
+            finished = True
+            buttons = [
+                [Button.inline("Upload", data=f"upload_{status.gid}")],
+                [Button.inline("Direct URL", data=f"url_{status.gid}")],
+            ]
+            await msg.edit(
+                f"Download complete.\nSaved to: `{status.files[0].path}`")
+            remove_download_from_db(msg.chat_id, gid)
+        elif status.status == "error":
+            finished = True
+            await msg.edit("Download failed." +
+                           f"\nError: {status.error_message}")
+            remove_download_from_db(msg.chat_id, gid)
+        elif status.status == "paused":
+            finished = True
+            await msg.edit("Download paused.")
+        elif status.status == "active":
+            await msg.edit(gen_progress_msg(msg.chat_id, status))
+            await asyncio.sleep(3)
+        elif status.status == "waiting":
+            await msg.edit(gen_progress_msg(msg.chat_id, status))
+            await asyncio.sleep(3)
+        elif status.status == "stopped":
+            buttons = [
+                [Button.inline("Resume", data=f"start_{msg.chat_id}_{gid}")],
+                [Button.inline("Delete", data=f"delete_{msg.chat_id}_{gid}")],
+            ]
+            await msg.edit(
+                f"Download stopped.",
+                buttons=buttons,
+            )
+            finished = True
+        else:
+            await msg.edit(f"Unknown status: {status.status}")
+            finished = True
+
+
+@hnd(pattern="download")
+@auth_chat_only  # only allow users in the chat to download
+async def download_cmd(ev):
+    try:
+        url = ev.text.split(" ", 1)[1]
+    except IndexError:
+        return await ev.reply("No URL provided")
+    path = get_path_from_chat_id(ev.chat_id)
+    download = add_download(ev.chat_id, url, path)
+    msg = await ev.reply("`Downloading...`")
+    await progress_callback(download.gid, msg)

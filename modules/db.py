@@ -9,7 +9,7 @@ AUTH = []
 
 
 def is_auth(chat_id: int):
-    return chat_id in AUTH
+    return chat_id in AUTH or chat_id == OWNER_ID
 
 
 def add_auth(chat_id):
@@ -34,9 +34,10 @@ def get_auth_list():
 def load_auth():
     for chat_id in get_auth_list():
         AUTH.append(chat_id["_id"])
-    AUTH.append(OWNER_ID)    
+    AUTH.append(OWNER_ID)
 
-load_auth()        
+
+load_auth()
 
 # Downloader
 
