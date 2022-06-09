@@ -60,14 +60,7 @@ async def progress_callback(gid: str, msg):
         status = ARIA.get_download(gid)
         print(f"Status: {status.status}")
         if status.status == "complete":
-            finished = True
-            buttons = [
-                [Button.inline("Upload", data=f"upload_{status.gid}")],
-                [Button.inline("Direct URL", data=f"url_{status.gid}")],
-            ]
-            msg = await msg.edit(
-                f"Download complete.\nSaved to: `{status.files[0].path}`")
-            remove_download_from_db(msg.chat_id, gid)
+            print(str(status))
         elif status.status == "error":
             finished = True
             msg = await msg.edit("Download failed." +
