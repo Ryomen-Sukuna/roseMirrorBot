@@ -42,11 +42,11 @@ def get_download_gids():
 
 def gen_progress_msg(chat_id: int, status):
     print(f"Progress2: {status.progress}")
-    msg = f"Downloading: {status.name}"
+    msg = f"Downloading: 1"
     msg += f"\nSpeed: {get_size(status.download_speed)}/s"
     msg += "\nETA: 0:00:00"
     msg += f"\nTotal: {get_size(status.total_length)}"
-    msg += f"\nProgress: {status.progress}%"
+    msg += f"\nProgress: {status.progress_string(digits=2)}%"
     buttons = [
         [Button.inline("Cancel", data=f"cancel_{chat_id}_{status.gid}")],
         [Button.inline("Pause", data=f"pause_{chat_id}_{status.gid}")],
