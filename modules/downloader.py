@@ -41,6 +41,7 @@ def get_download_gids():
 
 
 def gen_progress_msg(chat_id: int, status):
+    print(f"Progress2: {status.progress}")
     msg = f"Downloading: {status.name}"
     msg += f"\nSpeed: {get_size(status.download_speed)}/s"
     msg += "\nETA: 0:00:00"
@@ -77,6 +78,7 @@ async def progress_callback(gid: str, msg):
             finished = True
             msg = await msg.edit("Download paused.")
         elif status.status == "active":
+            print(f"Progress: {status.progress}")
             msg = await msg.edit(gen_progress_msg(msg.chat_id, status))
             await asyncio.sleep(3)
         elif status.status == "waiting":
