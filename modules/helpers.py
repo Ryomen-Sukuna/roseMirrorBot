@@ -20,6 +20,9 @@ def get_size(bytes, suffix="B"):
 def format_time(time):
     return str(datetime.timedelta(seconds=time))
 
+def get_time_diff(time):
+    return datetime.datetime.now() - time    
+
 
 def run_shell(command: str, wait: bool):
     subproc = Popen(command, stdout=PIPE, stderr=PIPE,

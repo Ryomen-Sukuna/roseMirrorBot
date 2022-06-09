@@ -1,7 +1,7 @@
 import asyncio
 
 from telethon import Button
-from .helpers import auth_chat_only, run_shell, get_size, format_time, hnd
+from .helpers import auth_chat_only, get_time_diff, run_shell, get_size, hnd
 from .db import add_download_to_db, get_download_list, remove_download_from_db
 from requests import get
 
@@ -41,10 +41,9 @@ def get_download_gids():
 
 
 def gen_progress_msg(chat_id: int, status):
-    print(f"Progress2: {status.progress}")
-    msg = f"Downloading: 1"
+    msg = f"Downloading: {status.name}"
     msg += f"\nSpeed: {get_size(status.download_speed)}/s"
-    msg += "\nETA: 0:00:00"
+    msg += "\nETA: " + str(get_time_diff(status.eta))
     msg += f"\nTotal: {get_size(status.total_length)}"
     msg += f"\nProgress: {status.progress_string(digits=2)}%"
     buttons = [
@@ -79,10 +78,12 @@ async def progress_callback(gid: str, msg):
             msg = await msg.edit("Download paused.")
         elif status.status == "active":
             print(f"Progress: {status.progress}")
-            msg = await msg.edit(gen_progress_msg(msg.chat_id, status))
+            text, buttons = gen_progress_msg(msg.chat_id, status)
+            msg = await msg.edit(text, buttons=buttons)
             await asyncio.sleep(3)
         elif status.status == "waiting":
-            msg = await msg.edit(gen_progress_msg(msg.chat_id, status))
+            text, buttons = gen_progress_msg(msg.chat_id, status)
+            msg = await msg.edit(text, buttons=buttons)
             await asyncio.sleep(3)
         elif status.status == "stopped":
             buttons = [
