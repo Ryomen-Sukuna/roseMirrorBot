@@ -45,7 +45,7 @@ def gen_progress_msg(chat_id: int, status):
     msg += f"\nSpeed: {get_size(status.download_speed)}/s"
     msg += "\nETA: " + status.eta_string(precision=0)
     msg += f"\nTotal: {get_size(status.total_length)}"
-    msg += f"\nProgress: {status.progress_string(digits=2)}%"
+    msg += f"\nProgress: {status.progress_string(digits=2)}"
     buttons = [
         [Button.inline("Cancel", data=f"cancel_{chat_id}_{status.gid}")],
         [Button.inline("Pause", data=f"pause_{chat_id}_{status.gid}")],
