@@ -22,7 +22,7 @@ ARIA = aria2.API(aria2.Client(host="http://localhost", port=6800, secret=""))
 
 
 def add_download(chat_id, url, path):
-    download = ARIA.add_uris([url], options={"dir": path})
+    download = ARIA.add_magnet(url, options={"dir": path}) if url.startswith("magnet:") else ARIA.add_uris([url], options={"dir": path})
     add_download_to_db(chat_id, download.gid)
     return download
 
